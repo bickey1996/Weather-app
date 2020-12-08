@@ -1,15 +1,9 @@
 <template>
   <section class="detailedforecasts">
     <div class="DetailedForecast_currentTempContainer">
-      <h1 class="DetailedForecast_currentTemp">
-        {{ Math.round(daily.temp.max) }}°C
-      </h1>
+      <h1 class="DetailedForecast_currentTemp">{{ Math.round(daily.temp.max) }}°C</h1>
       <div v-if="daily.weather[0].main == 'Clouds'">
-        <img
-          class="dailyforecastimg"
-          src="/icons/cloudy.svg"
-          v-bind:alt="daily.weather[0].main"
-        />
+        <img class="dailyforecastimg" src="/icons/cloudy.svg" v-bind:alt="daily.weather[0].main" />
       </div>
       <div
         v-else-if="
@@ -18,63 +12,50 @@
             daily.weather[0].main == 'Drizzle'
         "
       >
-        <img
-          class="dailyforecastimg"
-          src="/icons/rainy.svg"
-          v-bind:alt="daily.weather[0].main"
-        />
+        <img class="dailyforecastimg" src="/icons/rainy.svg" v-bind:alt="daily.weather[0].main" />
       </div>
       <div v-else-if="daily.weather[0].main == 'Snow'">
-        <img
-          class="dailyforecastimg"
-          src="/icons/snowing.svg"
-          v-bind:alt="daily.weather[0].main"
-        />
+        <img class="dailyforecastimg" src="/icons/snowing.svg" v-bind:alt="daily.weather[0].main" />
       </div>
       <div v-else>
-        <img
-          class="dailyforecastimg"
-          src="/icons/sun.svg"
-          v-bind:alt="daily.weather[0].main"
-        />
+        <img class="dailyforecastimg" src="/icons/sun.svg" v-bind:alt="daily.weather[0].main" />
       </div>
     </div>
     <div class="Detailedforecast-graphContainer" id="chart">
-      <apexchart
-        type="area"
-        height="350"
-        :options="chartOptions"
-        :series="series"
-      ></apexchart>
+      <apexchart type="area" height="350" :options="chartOptions" :series="series"></apexchart>
     </div>
     <div class="DetailedForecast_secondaryStatsContainer">
       <div class="DetailedForecast_secondaryStats">
-        <span class="font-weight-bold">Pressure</span
-        ><span>{{ daily.pressure }} hpa</span>
+        <span class="font-weight-bold">Pressure</span>
+        <span>{{ daily.pressure }} hpa</span>
       </div>
       <div class="DetailedForecast_secondaryStats">
-        <span class="font-weight-bold">Humidity</span
-        ><span>{{ daily.humidity }} %</span>
+        <span class="font-weight-bold">Humidity</span>
+        <span>{{ daily.humidity }} %</span>
       </div>
     </div>
     <div class="d-flex justify-content-between">
       <div class="DetailedForecast_sunriseStats">
-        <span class="font-weight-bold">Sunrise</span
-        ><span class="text-lighter">{{
+        <span class="font-weight-bold">Sunrise</span>
+        <span class="text-lighter">
+          {{
           new Date(this.daily.sunrise * 1000).toLocaleTimeString("en-US", {
-            timeZone: "UTC",
-            timeStyle: "short",
+          timeZone: timezone,
+          timeStyle: "short",
           })
-        }}</span>
+          }}
+        </span>
       </div>
       <div class="DetailedForecast_sunriseStats">
-        <span class="font-weight-bold">Sunset</span
-        ><span class="text-lighter">{{
+        <span class="font-weight-bold">Sunset</span>
+        <span class="text-lighter">
+          {{
           new Date(this.daily.sunset * 1000).toLocaleTimeString("en-US", {
-            timeZone: "UTC",
-            timeStyle: "short",
+          timeZone: timezone,
+          timeStyle: "short",
           })
-        }}</span>
+          }}
+        </span>
       </div>
     </div>
   </section>
@@ -82,7 +63,7 @@
 <script>
 export default {
   name: "DetailedForecast",
-  props: ["hourly", "daily", "dailyindex"],
+  props: ["hourly", "daily", "dailyindex", "timezone"],
   created() {
     this.fetchhourlydata();
   },
@@ -93,8 +74,8 @@ export default {
         if (oldVal != val) {
           this.fetchhourlydata();
         }
-      },
-    },
+      }
+    }
   },
   data() {
     return {
@@ -104,25 +85,25 @@ export default {
           type: "area",
           height: 350,
           zoom: {
-            enabled: false,
-          },
+            enabled: false
+          }
         },
         dataLabels: {
-          enabled: false,
+          enabled: false
         },
         stroke: {
-          curve: "straight",
+          curve: "straight"
         },
         xaxis: {
           type: "datetime",
           labels: {
-            format: "hTT",
-          },
+            format: "hTT"
+          }
         },
         yaxis: {
-          label: false,
-        },
-      },
+          label: false
+        }
+      }
     };
   },
   methods: {
@@ -130,11 +111,11 @@ export default {
       this.series = [
         {
           name: "Temp",
-          data: [],
-        },
+          data: []
+        }
       ];
       var date2 = new Date(this.daily.dt * 1000).toLocaleDateString("en-US", {
-        timeZone: "UTC",
+        timeZone: "UTC"
       });
       console.log(date2);
       for (var i = 0; i < this.hourly.length; i++) {
@@ -146,13 +127,13 @@ export default {
         if (date1 == date2) {
           this.series[0].data.push([
             this.hourly[i].dt * 1000,
-            this.hourly[i].temp,
+            this.hourly[i].temp
           ]);
         }
       }
       console.log(this.series);
-    },
-  },
+    }
+  }
 };
 </script>
 

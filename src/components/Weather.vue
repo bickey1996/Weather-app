@@ -62,6 +62,7 @@
       v-bind:hourly="weather.hourly"
       v-bind:daily="weather.daily[dailyindex]"
       v-bind:index="dailyindex"
+      v-bind:timezone="weather.timezone"
     />
   </div>
 </template>
