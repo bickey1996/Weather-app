@@ -1,10 +1,6 @@
 <template>
   <section class="dailyforecasts">
-    <div
-      class="dailyforecastContainer"
-      v-for="(item, index) in daily"
-      v-bind:key="index"
-    >
+    <div class="dailyforecastContainer" v-for="(item, index) in daily" v-bind:key="index">
       <input
         class="activeForecastSelector"
         type="radio"
@@ -13,20 +9,15 @@
         @click="changeIndex(index)"
       />
       <div class="dailyforecast">
-        <p class="font-weight-bold">
-          {{ datebuilder(item.dt).substring(0, 3) }}
-        </p>
+        <p class="font-weight-bold">{{ datebuilder(item.dt).substring(0, 3) }}</p>
         <p>
           <span class="font-weight-bold">{{ Math.round(item.temp.max) }}°</span>
+          {{" "}}
           <span class="text-lighter">{{ Math.round(item.temp.min) }}°</span>
         </p>
 
         <div v-if="item.weather[0].main == 'Clouds'">
-          <img
-            class="dailyforecastimg"
-            src="/icons/cloudy.svg"
-            v-bind:alt="item.weather[0].main"
-          />
+          <img class="dailyforecastimg" src="/icons/cloudy.svg" v-bind:alt="item.weather[0].main" />
         </div>
         <div
           v-else-if="
@@ -35,25 +26,13 @@
               item.weather[0].main == 'Drizzle'
           "
         >
-          <img
-            class="dailyforecastimg"
-            src="/icons/rainy.svg"
-            v-bind:alt="item.weather[0].main"
-          />
+          <img class="dailyforecastimg" src="/icons/rainy.svg" v-bind:alt="item.weather[0].main" />
         </div>
         <div v-else-if="item.weather[0].main == 'Snow'">
-          <img
-            class="dailyforecastimg"
-            src="/icons/snowing.svg"
-            v-bind:alt="item.weather[0].main"
-          />
+          <img class="dailyforecastimg" src="/icons/snowing.svg" v-bind:alt="item.weather[0].main" />
         </div>
         <div v-else>
-          <img
-            class="dailyforecastimg"
-            src="/icons/sun.svg"
-            v-bind:alt="item.weather[0].main"
-          />
+          <img class="dailyforecastimg" src="/icons/sun.svg" v-bind:alt="item.weather[0].main" />
         </div>
         <p class="text-lighter">{{ item.weather[0].main }}</p>
       </div>
@@ -83,7 +62,7 @@ export default {
         "September",
         "October",
         "November",
-        "December",
+        "December"
       ];
       let days = [
         "Sunday",
@@ -92,7 +71,7 @@ export default {
         "Wednesday",
         "Thursday",
         "Friday",
-        "Saturday",
+        "Saturday"
       ];
       let day = days[d.getDay()];
       let date = d.getDate();
@@ -103,8 +82,8 @@ export default {
     },
     changeIndex(index) {
       this.$emit("changeIndex", index);
-    },
-  },
+    }
+  }
 };
 </script>
 

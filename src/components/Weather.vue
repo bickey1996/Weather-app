@@ -23,21 +23,16 @@
         @click="setWeather(item.name, item.lat, item.lng)"
       >
         <div>
-          <span class="text-capitalize">{{ item.name }}</span
-          >,
+          <span class="text-capitalize">{{ item.name }}</span>,
           <span class="text-lighter">{{ item.country }}</span>
         </div>
         <div class="d-flex justify-space-between">
           <div class="d-flex flex-column">
-            <span class="font-weight-bold">{{ item.temp }}° C</span>
+            <span class="font-weight-bold">{{ Math.round(item.temp) }}° C</span>
             <span class="font-weight-light">{{ item.main }}</span>
           </div>
           <div v-if="item.main == 'Clouds'">
-            <img
-              class="weatherIcon"
-              src="/icons/cloudy.svg"
-              v-bind:alt="item.main"
-            />
+            <img class="weatherIcon" src="/icons/cloudy.svg" v-bind:alt="item.main" />
           </div>
           <div
             v-else-if="
@@ -46,25 +41,13 @@
                 item.main == 'Drizzle'
             "
           >
-            <img
-              class="weatherIcon"
-              src="/icons/rainy.svg"
-              v-bind:alt="item.main"
-            />
+            <img class="weatherIcon" src="/icons/rainy.svg" v-bind:alt="item.main" />
           </div>
           <div v-else-if="item.main == 'Snow'">
-            <img
-              class="weatherIcon"
-              src="/icons/snowing.svg"
-              v-bind:alt="item.main"
-            />
+            <img class="weatherIcon" src="/icons/snowing.svg" v-bind:alt="item.main" />
           </div>
           <div v-else>
-            <img
-              class="weatherIcon"
-              src="/icons/sun.svg"
-              v-bind:alt="item.main"
-            />
+            <img class="weatherIcon" src="/icons/sun.svg" v-bind:alt="item.main" />
           </div>
         </div>
       </div>
@@ -91,10 +74,10 @@ export default {
   name: "Weather",
   components: {
     DailyForecast,
-    DetailedForecast,
+    DetailedForecast
   },
   props: {
-    msg: String,
+    msg: String
   },
   data() {
     return {
@@ -105,7 +88,7 @@ export default {
       address: "",
       searchList: [],
       inputValue: "",
-      events: [],
+      events: []
     };
   },
   methods: {
@@ -113,7 +96,7 @@ export default {
       fetch(
         `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&units=metric&appid=${this.api_key}`
       )
-        .then((res) => {
+        .then(res => {
           return res.json();
         })
         .then(this.setResults);
@@ -135,13 +118,13 @@ export default {
         type,
 
         target: {
-          value: target.value,
-        },
+          value: target.value
+        }
       };
       this.events.push(event);
     },
     async handleChange(e) {
-      const matches = cities.filter((s) => s.name.includes(e.target.value));
+      const matches = cities.filter(s => s.name.includes(e.target.value));
 
       for (var i = 0; i < matches.length; i++) {
         if (i < 10) {
@@ -149,10 +132,10 @@ export default {
           await fetch(
             `https://api.openweathermap.org/data/2.5/onecall?lat=${matches[i].lat}&lon=${matches[i].lng}&units=metric&appid=${this.api_key}`
           )
-            .then((res) => {
+            .then(res => {
               return res.json();
             })
-            .then((res) => {
+            .then(res => {
               temp.temp = res.current.temp;
               temp.main = res.current.weather[0].main;
             });
@@ -160,19 +143,20 @@ export default {
         }
       }
       this.searchList = matches;
+      this.inputValue = e.target.value;
       console.log(this.searchList);
-    },
+    }
   },
   created() {
     console.log(cities);
     this.$getLocation({})
-      .then((coordinates) => {
+      .then(coordinates => {
         console.log(coordinates);
         this.coordinates = coordinates;
         this.fetchWeather(coordinates.lat, coordinates.lng);
       })
-      .catch((error) => console.log(error));
-  },
+      .catch(error => console.log(error));
+  }
 };
 </script>
 
@@ -231,7 +215,7 @@ export default {
     0 -2px 3px -2px rgba(0, 0, 0, 0.01);
   position: absolute;
 
-  z-index: 10;
+  z-index: 100;
   max-width: 770px;
   width: 100%;
 }
