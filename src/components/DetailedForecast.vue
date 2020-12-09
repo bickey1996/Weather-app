@@ -117,12 +117,11 @@ export default {
       var date2 = new Date(this.daily.dt * 1000).toLocaleDateString("en-US", {
         timeZone: "UTC"
       });
-      console.log(date2);
+
       for (var i = 0; i < this.hourly.length; i++) {
         var date1 = new Date(
           this.hourly[i].dt * 1000
         ).toLocaleDateString("en-US", { timeZone: "UTC" });
-        console.log(date1);
 
         if (date1 == date2) {
           this.series[0].data.push([
@@ -131,7 +130,6 @@ export default {
           ]);
         }
       }
-      console.log(this.series);
     }
   }
 };

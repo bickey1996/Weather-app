@@ -1,13 +1,7 @@
 <template>
   <div class="main">
     <div class="searchbox">
-      <input
-        class="searchbar"
-        placeholder="Search"
-        @input="addEvent"
-        :value="inputValue"
-        @change="handleChange"
-      />
+      <input class="searchbar" placeholder="Search" v-model="inputValue" />
       <div class="searchicon">
         <i class="fas fa-search"></i>
       </div>
@@ -20,11 +14,14 @@
         class="suggestion-box"
         v-for="(item, index) in searchList"
         v-bind:key="index"
-        @click="setWeather(item.name, item.lat, item.lng)"
+        @click="setWeather(item)"
       >
         <div>
-          <span class="text-capitalize">{{ item.name }}</span>,
-          <span class="text-lighter">{{ item.country }}</span>
+          <span class="text-capitalize">{{ item.city }}</span>,
+          <span class="text-lighter">
+            {{ item.admin_name+", "+
+            item.country }}
+          </span>
         </div>
         <div class="d-flex justify-space-between">
           <div class="d-flex flex-column">
@@ -70,7 +67,7 @@
 <script>
 import DailyForecast from "./DailyForecast.vue";
 import DetailedForecast from "./DetailedForecast.vue";
-import cities from "cities.json";
+import cities from "./in.json";
 export default {
   name: "Weather",
   components: {
@@ -92,6 +89,42 @@ export default {
       events: []
     };
   },
+  watch: {
+    inputValue: async function(val, oldVal) {
+      if (oldVal != val) {
+        let value = val;
+        if (value.length > 1) {
+          const regex = new RegExp(`^${value}`, `i`);
+
+          const matches = cities.filter(v => regex.test(v.city));
+
+          for (var i = 0; i < matches.length; i++) {
+            if (i < 10) {
+              var temp = matches[i];
+              await fetch(
+                `https://api.openweathermap.org/data/2.5/onecall?lat=${matches[i].lat}&lon=${matches[i].lng}&units=metric&appid=${this.api_key}`
+              )
+                .then(res => {
+                  return res.json();
+                })
+                .then(res => {
+                  temp.temp = res.current.temp;
+                  temp.main = res.current.weather[0].main;
+                });
+              matches[i] = temp;
+            } else {
+              break;
+            }
+          }
+          this.searchList = matches;
+        } else {
+          this.searchList = [];
+        }
+      } else {
+        console.log("valueNot changed", this.searchList);
+      }
+    }
+  },
   methods: {
     fetchWeather(lat, lng) {
       fetch(
@@ -107,9 +140,10 @@ export default {
       this.weather = results;
       this.searchList = [];
     },
-    setWeather(name, lat, lng) {
-      this.inputValue = name;
-      this.fetchWeather(lat, lng);
+    setWeather(item) {
+      this.inputValue =
+        item.city + ", " + item.admin_name + ", " + item.country;
+      this.fetchWeather(item.lat, item.lng);
     },
     changeIndex(index) {
       this.dailyindex = index;
@@ -125,31 +159,36 @@ export default {
       this.events.push(event);
     },
     async handleChange(e) {
-      const matches = cities.filter(s => s.name.includes(e.target.value));
+      let value = e.target.value;
+      if (value.length > 0) {
+        const regex = new RegExp(`^${value}`, `i`);
 
-      for (var i = 0; i < matches.length; i++) {
-        if (i < 10) {
-          var temp = matches[i];
-          await fetch(
-            `https://api.openweathermap.org/data/2.5/onecall?lat=${matches[i].lat}&lon=${matches[i].lng}&units=metric&appid=${this.api_key}`
-          )
-            .then(res => {
-              return res.json();
-            })
-            .then(res => {
-              temp.temp = res.current.temp;
-              temp.main = res.current.weather[0].main;
-            });
-          matches[i] = temp;
+        const matches = cities.filter(v => regex.test(v.name));
+
+        for (var i = 0; i < matches.length; i++) {
+          if (i < 10) {
+            var temp = matches[i];
+            await fetch(
+              `https://api.openweathermap.org/data/2.5/onecall?lat=${matches[i].lat}&lon=${matches[i].lng}&units=metric&appid=${this.api_key}`
+            )
+              .then(res => {
+                return res.json();
+              })
+              .then(res => {
+                temp.temp = res.current.temp;
+                temp.main = res.current.weather[0].main;
+              });
+            matches[i] = temp;
+          } else {
+            break;
+          }
         }
+        this.searchList = matches;
+        this.inputValue = value;
       }
-      this.searchList = matches;
-      this.inputValue = e.target.value;
-      console.log(this.searchList);
     }
   },
   created() {
-    console.log(cities);
     this.$getLocation({})
       .then(coordinates => {
         console.log(coordinates);
